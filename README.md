@@ -79,6 +79,19 @@ The input for the 16S ASV Processsing Pipeline and raw output from your sequenci
 
 Most often, excluding those generated using Nanopore, your reads will be paired-end and need to be assembled. Prior to assembling our reads, we must trim our sequences to remove low quality base pairs. We will aim to trim away base pairs below a quality score of 30. This is imperative as poor quality data can yield inaccurate results. 
 
+To check the quality of your forward and reverse reads, the following code is used: 
+
+To visualize the quality profiles of our forward reads:
+
+```{r}
+plotQualityProfile(fnFs[1:2])
+```
+To visualize the quality profiles of our reverse reads:
+
+```{r}
+plotQualityProfile(fnRs[1:2])
+```
+
 We will trim and filter our reads using the filterAndTrim() function. We’ll use standard filtering parameters: maxN=0 (DADA2 requires no Ns, the second it can't decipher a nucleotide it'll through the whole sequence out), truncQ=2, rm.phix=TRUE and maxEE=c(2,2) (maxEE allows two errors per read in the forward and reverse reads). The maxEE parameter sets the maximum number of “expected errors” allowed in a read, which is a better filter than simply averaging quality scores. 
 
 Be sure to change your truncLen parameter to reflect the lengths you want to truncate your forward and reverse reads to.
@@ -91,13 +104,23 @@ out <- filterAndTrim(fnFs, filtFs, fnRs, filtRs,
 head(out)
 ```
 
-## Step Three: Alignment
-## Step Four: Identify ASVs 
+## Step Three: Evaluate Error Rates
+
+
+
+
+## Step Three: Merge Paired-End Reads
+
+
+Align thousands of 16S rRNA genes so that conserved regions line up 
+Most often we will use a provided reference file for this purpose built off of the Silva reference database (more on Silva later) 
+This is one of the most computational intensive steps ( but there are ways to make it easier*!) 
+
+## Step Four: Evaluate and Identify ASVs 
 
 ASVs = # of different types of microbes, you can set an OTU to be 100% and this would make it an ASV – they are different in the sense that an OTU does have 100% percent identity
 
-## Step Five: Diversity Indices
-## Step Six: Classification
+## Step Six: Assign Taxonomy
 
 # Manual Steps
 
