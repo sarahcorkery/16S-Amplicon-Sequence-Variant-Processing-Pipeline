@@ -73,6 +73,36 @@ Different primers tend to work better for different organisms. Choose 16S primer
 
 We will be created paired-end reads, which are forward and reverse reads joined by a small overlap region. The longer these are, the better. Unfortunately, the length of your reads (or ASVs) is limited by your choice of sequencing method.
 
+## Step Two: Initial Preparation
+
+First, you must saving your raw sequencing files to where you intend to set your working directory. Once they have been moved to your desired location, unzip your fastq.gz files. Ensure they are .fastq files before moving forward. 
+
+Next, we will assign our working directory. Be sure to set your working directory to where your sequence files are located!
+
+```{r}
+setwd("/Users/sarahcorkery/Desktop/ASV Processing/CorkeryV4V5/new_fastq")
+```
+To make the location to these files more easily accessible for downstream commands, be sure to assign your working directory (i.e., where our files are located) to an object called path.
+
+```{r}
+path<-"/Users/sarahcorkery/Desktop/ASV Processing/CorkeryV4V5/new_fastq"
+```
+
+At this point, we must verify that our forward and reverse fastq files have the naming format: SAMPLENAME_R1_001.fastq and SAMPLENAME_R2_001.fastq. Below, we will tell R studio what formatting represents a forward and reverse read file. This is done by assigning forward and reverse reads to the objects fnFs for forward reads, and fnRs for reverse reads. 
+
+```{r}
+fnFs <- sort(list.files(path, pattern="_R1_001.fastq", full.names = TRUE))
+fnRs <- sort(list.files(path, pattern="_R2_001.fastq", full.names = TRUE))
+```
+
+```{r}
+# Now, assuming files have the naming format: SAMPLENAME_XXX.fastq, we will extract the forward read sample names present in fnFs to make a list. This is not done for the reverse read sample names as they will be identical to the forward read names.    
+sample.names <- sapply(strsplit(basename(fnFs), "_"), `[`, 1)
+```
+
+
+
+
 ## Step Two: Quality Control
 
 The input for the 16S ASV Processsing Pipeline and raw output from your sequencing center will be a .fastq file. These files contain your raw sequencing data and the quality scores associated with each base pair. It is not readable via your text editor. 
