@@ -1,55 +1,75 @@
 # 16S-Amplicon-Variant-Sequence-Processing-Pipeline
 The following a pipeline processing 16S amplicon variant sequence (ASV) data. The DADA2 portion of this script will allow us to process amplicon sequencing data to identify and quantify ASVs. The latter portion of this script uses PHYLOSEQ to visualize the relative abundance of our processed amplicon sequencing data.
 
-## Installation Instructions 
-# dada2 
+# Installation Instructions 
+## dada2 
 
 This pipeline uses a plethora of dada2 functions to process and quantify amplicon sequence variants. Installation instructions can be found here: 
 
 https://benjjneb.github.io/dada2/dada-installation.html
 
-The following script was be pasted into the console to download dada2 for this pipeline. 
+The following script from the installation link was pasted into the console to download dada2 for this pipeline. 
 
 ```{r}
 if (!requireNamespace("BiocManager", quietly = TRUE))
 install.packages("BiocManager")
 BiocManager::install("dada2")
 ```
-Be sure to load your library prior to beginning work. 
+Be sure to load dada2's library prior to beginning work. 
 
 ```{r}
 library(dada2); packageVersion("dada2")
 ```
-# phyloseq
+## phyloseq
+
+Phyloseq and a set of other packages are required for this processing pipeline. These will allow us to produce high-quality graphs from our processed amplicon sequencing data. 
+
+Installation instructions for phyloseq can be found at the following link: 
+
+https://www.bioconductor.org/packages/release/bioc/html/phyloseq.html
+
+The following script from the installation link was pasted into the console to download phyloseq for this pipeline. 
 
 ```{r}
-# To begin, we will want to install PHYLOSEQ and a set of additional packages (stated below) if they have not already been installed. Do this by adding the below script to the console. 
-# install.packages("phyloseq")
-# install.packages("Biostrings")
-# install.packages("ggplot2")
-# install.packages("RColorBrewer")
-# install.packages("tidyverse")
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("phyloseq")
+```
+The remaining packages required for this portion of the pipeline can be installed in the console using the script below. 
 
-# In the even that you receive the warning message: "Package ‘phyloseq’ is not available for this version of R" you can paste the following code into the console to download PHYLOSEQ: 
-# if (!require("BiocManager", quietly = TRUE))
-    # install.packages("BiocManager")
-# BiocManager::install("phyloseq")
+```{r}
+install.packages("Biostrings")
+install.packages("ggplot2")
+install.packages("RColorBrewer")
+install.packages("tidyverse")
+```
+Be sure to load these package's libraries prior to beginning the pipeline. 
+
+```{r}
+library(phyloseq)
+library(Biostrings)
+library(ggplot2)
+library(RColorBrewer)
+library(tidyverse)
 ```
 
-## Usage 
+# Usage Instructions
+
+The following code will outline the main steps of 16S Amplicon Sequence Variant processing pipeline. 
+
+## Step One: Experimental Design 
 
 Examples or demonstrations of how to use the project's features and functionalities.
 Code snippets or commands illustrating common use cases.
 
-1. Experimental design!** most important 
-2. Quality Control + processing raw reads 
-3. Alignment – align reads
-4. Identify ASVs (note on OTUs)  - ASVs = # of different types of microbes, you can set an OTU to be 100% and this would make it an ASV – they are different in the sense that an OTU does have 100% percent identity
-5. Diversity Indices – how many organisms, what are the relative abundances
-6. Classification  ( what is X?) – you don’t need diversity indices for this
-7.  Phylogeny ( how related is X to others?)  Not covering in our course
-<img width="2105" height="266" alt="image" src="https://github.com/user-attachments/assets/52867775-9374-411e-aa75-2b2edd3e3307" />
+## Step Two: Quality Control + processing raw reads 
+## Step Three: Alignment
+## Step Four: Identify ASVs 
 
+ASVs = # of different types of microbes, you can set an OTU to be 100% and this would make it an ASV – they are different in the sense that an OTU does have 100% percent identity
+
+## Step Five: Diversity Indices
+## Step Six: Classification
 
 # Manual Steps
 
