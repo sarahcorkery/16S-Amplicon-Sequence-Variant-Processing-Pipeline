@@ -300,11 +300,59 @@ write.csv(OTUabund,file='/Users/sarahcorkery/Desktop/ASV Processing/CorkeryV4V5/
 ```{r}
 taxa <-taxa[-1]
 ```
-### Step below allows us to verify that our formatting is correct. The first column containing nucleotide sequences should have been deleted.
+### Step i: The script below allows us to verify that our formatting is correct. The first column containing nucleotide sequences should have been deleted.
 ```{r}
 View(taxa)
 ```
+## Step Two: 
 
+```{r}
+# We will create a PHYLOSEQ object called "taxmat", containing our taxa data. We will make it a matrix such that it can be used by PHYLOSEQ.
+taxmat <- as.matrix(taxa)
+```
+
+```{r}
+# Next, we must make the final formatting changes to our transposed seqtab.nochim table such that it can be used by PHYLOSEQ. We will call this object otumat, and it will contain our ASV abundance data. Using the existing object "flipped_seqtab.nochim", we will delete the first column listing nucleotide sequences.
+otumat <- flipped_seqtab.nochim[,-1]
+
+# The command below allows us to once again verify that our formatting is correct. No column listing nucleotide sequences should be present.  
+View(otumat)
+```
+
+```{r}
+# In addition to this formatting change, we must ensure both otumat and taxmat are matrices for downstream PHYLOSEQ processing. We can check the class of both objects using the class() function: 
+class(otumat)
+class(taxmat)
+```
+
+# Since both objects are now matrices, we can move onto our last bit of formatting.
+
+```{r}
+# We will first ensure that the row names are ASVs for both objects:
+rownames(otumat) <- paste0("ASV", 1:nrow(otumat))
+rownames(taxmat) <- paste0("ASV", 1:nrow(taxmat))
+
+# We can verify this is the case using the commands below:
+View(otumat)
+View(taxmat)
+
+# Lastly, we must make sure R Studio recognizes our OTU data as numeric and not as character data. 
+class(otumat)<-"numeric"
+```
+
+# Now that we've verified that our rownames are ASVs and that R recognizes otumat as numeric data, we can use PHYLOSEQ to continue analysis. 
+
+```{r}
+# The next command is PHYLOSEQ-specific. Here, we are telling PHYLOSEQ where our "OTU" data can be found (i.e., within the otumat object). 
+OTU = otu_table(otumat, taxa_are_rows = TRUE)
+# Note: the function on line 354 is otu_table(). 
+```
+ 
+```{r}
+# Next, we will tell PHYLOSEQ where our "Taxa" data can be found (i.e., within the taxmat object).
+TAX = tax_table(taxmat)
+# Note: the function on line 360 is tax_table(). 
+```
 
 # Features:
 A list or description of the main functionalities and capabilities of the project.
