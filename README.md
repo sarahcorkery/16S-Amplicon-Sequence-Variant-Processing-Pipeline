@@ -62,7 +62,7 @@ library(RColorBrewer)
 library(tidyverse)
 ```
 
-# Usage Instructions
+# Usage Instructions - dada2 Processing
 
 The following code will outline the main steps of 16S Amplicon Sequence Variant processing pipeline. 
 
@@ -157,7 +157,7 @@ plotErrors(errF, nominalQ=TRUE)
 
 We can tell if our rates are good or bad based on whether the estimated error rates (red lines) are a good fit to the observed rates (black lines). If there is too much divergence, our data may not be useable. 
 
-Next, we'll be applying the core sample inference algorithm to our filtered and trimmed sequence data. With this command we take each sample's reads and use our error rates to infer which sequences are real biological variants and which are sequencing errors. dada() then infers the true error-free ASVs in each sample and how many reads belong to each.
+Finally, we will apply the core sample inference algorithm to our filtered and trimmed sequence data. With this command we take each sample's reads and use our error rates to infer which sequences are real biological variants and which are sequencing errors. dada() then infers the true error-free ASVs in each sample and how many reads belong to each.
  
 ```{r}
 dadaFs <- dada(filtFs, err=errF, multithread=TRUE)
@@ -209,8 +209,6 @@ As a final check of our progress, we will look at the number of reads that made 
 ```{r}
 getN <- function(x) sum(getUniques(x))
 track <- cbind(out, sapply(dadaFs, getN), sapply(dadaRs, getN), sapply(mergers, getN), rowSums(seqtab.nochim))
-
-# If you are processing a single sample, remove the sapply calls: e.g. replace sapply(dadaFs, getN) with getN(dadaFs)
 colnames(track) <- c("input", "filtered", "denoisedF", "denoisedR", "merged", "nonchim")
 rownames(track) <- sample.names
 head(track)
@@ -220,24 +218,103 @@ head(track)
 
 For step six, we will assign taxonomy to our sequences using the assignTaxonomy() function. This function requires appropriately formatted FASTA files containing taxonomically classified reference sequences to use as a training dataset. To facilitate this process, we will download the SILVA taxonomy database, which provides the necessary reference sequences for accurate taxonomic assignment.
 
-We must state the path to this file on our computer in the assignTaxonomy() function below. Be sure to state the version of SILVA you used when publishing your findings. Using the command below, we tell DADA2 to assign taxonomy to our seqtab.nochim matrix, containing our non-chimeric ASVs and their abundances. The assignTaxonomy() function will use SILVA, version 138.2 as a training dataset to assign taxonomy. 
+We must state the path to this file on our computer in the assignTaxonomy() function below. Using the command below, we tell DADA2 to assign taxonomy to our seqtab.nochim matrix, which contains our non-chimeric ASVs and their abundances.
 
 ```{r}
 taxa <- assignTaxonomy(seqtab.nochim, "/Users/sarahcorkery/Desktop/6452 02 - Bioinformatics/R files/Silva/silva_nr99_v138.2_toSpecies_trainset.fa.gz", multithread=TRUE)
 ```
 
-# DADA2 only makes species level assignments based on exact matching between ASVs and sequenced reference strains. Recent analysis suggests that exact matching (or 100% identity) is the only appropriate way to assign species to 16S gene fragments.
+dada2 only makes species level assignments based on exact matching between ASVs and sequenced reference strains. Below, the addSpecies() function will assign species-level annotation to our taxonomic table.
 
-```{r}
-# The addSpecies() function will assign species-level annotation to our taxonomic table. We will assign this table as an object called taxa. 
+```{r} 
 taxa <- addSpecies(taxa, "/Users/sarahcorkery/Desktop/6452 02 - Bioinformatics/R files/Silva/silva_v138.2_assignSpecies.fa.gz")
 ```
 
+Lastly, we will inspect the taxonomic assignmnet by removing sequence rownames for display purposes only
+
 ```{r}
-# Next, we will inspect the taxonomic assignment by removing sequence rownames for display purposes only.
 taxa.print <- taxa
 rownames(taxa.print) <- NULL
 head(taxa.print)
+```
+
+## Step Seven: Save your Progress
+
+Finally, we will save our taxa object, containing taxonomic assignments, our seqtab.nochim object, containing our ASVs and their abundances, and our track object, showing the remaining reads following each step of the DADA2 pipeline as .csv files. This step will allow us to save our progress, and later read in data, in the event our objects are lost or we terminate our R Studio session. 
+
+write.csv(taxa, file = "/Users/sarahcorkery/Desktop/ASV Processing/CorkeryV4V5/new_fastq/output_files/CorkeryV4V5_taxa.csv")
+
+write.csv(seqtab.nochim, file = "/Users/sarahcorkery/Desktop/ASV Processing/CorkeryV4V5/new_fastq/output_files/CorkeryV4V5_seqtabnochim.csv")
+
+write.csv(track, file = "/Users/sarahcorkery/Desktop/ASV Processing/CorkeryV4V5/new_fastq/output_files/CorkeryV4V5_track.csv")
+
+Using the commands below, we can read in the taxa, seqtab.nochim and track objects using the .csv files we made in the previous step. This is essential in the event our objects are lost or we terminate our R studio session:
+
+taxa <- read.csv(file = "/Users/sarahcorkery/Desktop/ASV Processing/CorkeryV4V5/new_fastq/output_files/CorkeryV4V5_taxa.csv")
+seqtab.nochim <- read.csv(file = "/Users/sarahcorkery/Desktop/ASV Processing/CorkeryV4V5/new_fastq/output_files/CorkeryV4V5_seqtabnochim.csv", header = FALSE)
+track <- read.csv(file = "/Users/sarahcorkery/Desktop/ASV Processing/CorkeryV4V5/new_fastq/output_files/CorkeryV4V5_track.csv")
+
+# Usage Instructions - phyloseq Processing
+
+# In the next set of chunks, we will change the formatting of our seqtab.nochim table. This is necessary for downstream work with phyloseq, as well as an optional step to merge seqtab.nochim with our taxa table for easier viewing.
+
+```{r}
+# Step 1: To begin this process, we will first transpose our seqtab.nochim table. You must use the imported seqtab.nochim object (fromm the .csv) in the previous step for this step to run properly. 
+flipped_seqtab.nochim <- as.data.frame(t(seqtab.nochim))
+flipped_seqtab.nochim
+```
+
+
+# In this flipped csv, the header becomes a sequence (ASV) and moves the sample names to the first row (not the header).
+
+```{r}
+# Step 2: Next, we will copy the first row. 
+colnames(flipped_seqtab.nochim) <- flipped_seqtab.nochim[1,]
+# The command below allows us to verify that our formatting is correct thus far. It should look the same as it did following Step 1, apart from the header now stating the correct sample names. 
+View(flipped_seqtab.nochim)
+```
+
+```{r}
+# Step 3: Next, we will delete the first row of our transposed seqtab.nochim table. 
+flipped_seqtab.nochim <- flipped_seqtab.nochim[-1,]
+# The command below allows us to once again verify that our formatting is correct. The first row (not the header) should have been deleted. 
+View(flipped_seqtab.nochim)
+```
+
+# Next we want to change the names of the sequences to "ASV(n)" so it is more digestable than the nucleotide sequence itself. 
+
+```{r}
+# Step 4: In the command below, we will take each column and its corresponding row name, and paste "ASV"1,2,3.. as a new column next to our nucleotide sequence column.  
+rownames(flipped_seqtab.nochim) <- paste0("ASV", 1:nrow(flipped_seqtab.nochim))
+```
+
+```{r}
+# Step 5: Next, we'll remove the nucleotide sequences column and save this new table as flipped_seqtab.nochim_forself for our ease of viewing.  
+flipped_seqtab.nochim_forself <- flipped_seqtab.nochim[,-1]
+```
+
+```{r}
+# Step 6: We will then save these two tables (the one with our nucleotide sequences and the other without) as .csv files. In the event our R Studio session is lost, we can always read these files back in. 
+write.csv(flipped_seqtab.nochim, file = '/Users/sarahcorkery/Desktop/ASV Processing/CorkeryV4V5/new_fastq/output_files/CorkeryV4V5flipped_seqtab.nochim.csv')
+write.csv(flipped_seqtab.nochim_forself, file ='/Users/sarahcorkery/Desktop/ASV Processing/CorkeryV4V5/new_fastq/output_files/CorkeryV4V5flipped_seqtab.nochim_forself.csv')
+```
+
+## The following steps are placed outside of a chunk as they are intended to be adjusted prior to running this script.
+
+Manual Step Here: 
+
+# Step 7: Next, as an optional step, we can use the cbind() function to save our flipped seqtab.nochim and taxa data as one csv. This approach offers the most comprehensive view of our ASV abundances and taxonomic classifications.
+
+OTUabund<-cbind(flipped_seqtab.nochim,taxa)
+write.csv(OTUabund,file='/Users/sarahcorkery/Desktop/ASV Processing/CorkeryV4V5/new_fastq/output_files/CorkeryV4V5OTUabund.csv')
+
+```{r}
+# Step 8: DADA2 generates the taxa object with sequences in the first column, a format incompatible with PHYLOSEQ. To ensure compatibility, we will remove this column using the command below. 
+taxa <-taxa[-1]
+# The command below allows us to verify that our formatting is correct. The first column containing nucleotide sequences should have been deleted.
+View(taxa)
+
+## Step One: Formatting for phyloseq
 
 
 # Features:
@@ -248,6 +325,8 @@ A list of programming languages, frameworks, libraries, and other tools utilized
 
 # Known Issues or Limitations:
 A section detailing any known bugs, limitations, or areas for improvement.
+
+- downloading packages
 
 # License:
 Information about the project's licensing, specifying how others can use and distribute the code.
