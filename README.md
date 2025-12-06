@@ -465,16 +465,19 @@ ggplot(taxa_abundance_table_phylum, aes(x = Sample, y = Phylum, fill = Abundance
 
 # Technologies Used:
 
-This pipeline utilizes R Studio to process and visualize 16S amplicon sequence variant data. dada2, phyloseq, Biostrings, ggplot2, RColorBrewer and tidyverse are used in this pipeline. 
+This pipeline utilizes R Studio to process and visualize 16S amplicon sequence variant data. dada2, phyloseq, Biostrings, ggplot2, RColorBrewer and tidyverse are used in this pipeline. The most recent version of SILVA, 138.2 is employed for taxonomic assignment.
 
 # Known Issues or Limitations:
 
 The phyloseq link denoted above can also be used to troubelshoot its installation. Issues with installing packages may be attributed to the version of R Studio you are working with. Ensure installation of packages compatible your system's version of R Studio. You may need to install newer versions of some packages such that they can be used. 
 
+Ensure the most recent version of SILVA is used to assign taxonomy. Ensure it can be accessed on your system using the path you input in assignTaxonomy(). 
+
+Portions of this script will need to be edited, such that they are applicable to your system. For instance, you must manually denote where your working directory is, rather than using the sample one displayed in this code. 
+
 # License:
 
-This script is not licensed. It can be accessed and distributed by the public via github.
-
+This script is not licensed. It can be freely accessed and distributed via github.
 
 # Contact Information and Acknowledgments:
 
@@ -483,3 +486,13 @@ The dada2 portion of this script was adapted from the following pipeline:
 https://benjjneb.github.io/dada2/tutorial.html
 
 The phyloseq portion of this script can be attributed to Lecture 6 from Jacqueline Goordial's Bioinformatics for Environmental Sciences graduate course (ENVS*6452) taught at the University of Guelph. 
+
+## Bibliography
+
+Callahan, B. J., McMurdie, P. J., Rosen, M. J., Han, A. W., Johnson, A. J., & Holmes, S. P. (2016). DADA2: High-resolution sample inference from Illumina amplicon     data. Nature methods, 13(7), 581–583. https://doi.org/10.1038/nmeth.3869
+Chuvochina M, Gerken J, Frentrup M, Sandikci Y, Goldmann R, Freese HM, Göker M, Sikorski J, Yarza P, Quast C, Peplies J, Glöckner FO, Reimer LC (2026) SILVA in         2026: a global core biodata resource for rRNA within the DSMZ digital diversity. Nucleic Acids Research, gkaf1247.
+McMurdie and Holmes (2013) phyloseq: An R Package for Reproducible Interactive Analysis and Graphics of Microbiome Census Data. PLoS ONE. 8(4):e61217
+Neuwirth E (2022). RColorBrewer: ColorBrewer Palettes. R package version 1.1-3, https://CRAN.R-project.org/package=RColorBrewer.
+Pagès H, Aboyoun P, Gentleman R, DebRoy S (2025). Biostrings: Efficient manipulation of biological strings. R package version 2.76.0,                                   https://github.com/bioconductor/biostrings
+Wickham H (2016). ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag New York. ISBN 978-3-319-24277-4, https://ggplot2.tidyverse.org.
+Wickham H, Averick M, Bryan J, Chang W, McGowan LD, François R, Grolemund G, Hayes A, Henry L, Hester J, Kuhn M, Pedersen TL, Miller E, Bache SM, Müller K, Ooms J,     Robinson D, Seidel DP, Spinu V, Takahashi K, Vaughan D, Wilke C, Woo K, Yutani H (2019). “Welcome to the tidyverse.” Journal of Open Source Software, 4(43),        1686. doi:10.21105/joss.01686.
