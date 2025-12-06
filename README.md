@@ -269,6 +269,7 @@ In the next set of chunks, we will change the formatting of our seqtab.nochim ta
 ```{r}
 flipped_seqtab.nochim <- as.data.frame(t(seqtab.nochim))
 ```
+
 ### Step B: Next, we will copy the first row. 
 
 ```{r}
@@ -276,16 +277,19 @@ colnames(flipped_seqtab.nochim) <- flipped_seqtab.nochim[1,]
 ```
 
 ### Step C: Next, we will delete the first row of our transposed seqtab.nochim table.
+
 ```{r}
 flipped_seqtab.nochim <- flipped_seqtab.nochim[-1,]
 ```
 
 ### Step D: In the command below, we will take each column and its corresponding row name, and paste "ASV"1,2,3.. as a new column next to our nucleotide sequence column.
+
 ```{r}
 rownames(flipped_seqtab.nochim) <- paste0("ASV", 1:nrow(flipped_seqtab.nochim))
 ```
 
 ### Step E: Next, we'll remove the nucleotide sequences column and save this new table as flipped_seqtab.nochim_forself for our ease of viewing.  
+
 ```{r}
 flipped_seqtab.nochim_forself <- flipped_seqtab.nochim[,-1]
 ```
@@ -355,14 +359,12 @@ Next, we will tell phyloseq where our "OTU" data can be found (i.e., within the 
 
 ```{r}
 OTU = otu_table(otumat, taxa_are_rows = TRUE)
-# Note: the function on line 354 is otu_table(). 
 ```
 
 We will also tell it where our "Taxa" data can be found (i.e., within the taxmat object).
  
 ```{r}
 TAX = tax_table(taxmat)
-# Note: the function on line 360 is tax_table(). 
 ```
 
 Finally, we will tell phyloseq to combine our "OTU" and "Taxa" data into an object called physeq. We will also instruct phyloseq to include the names of our samples in the physeq object. 
@@ -377,24 +379,22 @@ samplenames<-sample_names(physeq)
 
 In the following script, we will create graphs showcasing the abundance and relative abundance of our ASVs by taxonomic rank. 
 
+We will begin with creating a bar graph of our sample's absolute abundance by Phylum using the plot_bar() function.
+
 ```{r}
-# We will begin with creating a bar graph of our sample's absolute abundance by Phylum using the plot_bar() function.
 phylum_barplot <- plot_bar(physeq, fill = "Phylum")
 phylum_barplot
 ```
-
-# Here, the space between each dark line represents the absolute abundance of a particular ASV. Unfortunately, these lines distract from the message of the plot, so we can remove them using ggplot2's geom_bar() function.
+Here, the space between each dark line represents the absolute abundance of a particular ASV. We can use the script below to remove these dark lines from our graph
 
 ```{r}
-# The following commands will remove the dark ASV lines from our Phylum absolute abundance graph. 
 phylum_barstacked <- phylum_barplot + geom_bar(aes(fill=Phylum), stat="identity", position="stack")
 phylum_barstacked
 ```
 
-# Next, we will begin to create a relative abundance plot. 
+Next, to create a relative abundance plot. We will first step will use the tax_glom() PHYLOSEQ function to "glom" together ASVs based on our taxonomic assignment of choice. In this case, we will be combining our taxonomic data by Phylum to visualize downstream Phyla relative abundance.
 
 ```{r}
-# The first step will use the tax_glom() PHYLOSEQ function to "glom" together ASVs based on our taxonomic assignment of choice. In this case, we will be combining our taxonomic data by Phylum to visualize downstream Phyla relative abundance.
 g_phylum <- tax_glom(physeq, "Phylum")
 ```
 
