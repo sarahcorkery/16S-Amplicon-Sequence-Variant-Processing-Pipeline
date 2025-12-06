@@ -187,9 +187,7 @@ dim(seqtab)
 The following code will allow us to inspect the distribution of sequence lengths.
 
 ```{r}
-# From here we can inspect the distribution of sequence lengths. 
 table(nchar(getSequences(seqtab)))
-
 ```
 
 While the dada() function corrects substitutions, indel errors and chimeras remain. Fortunately, the accuracy of sequence variants after denoising makes identifying chimeric ASVs simpler than when dealing with OTUs. The following script will construct and remove chimeras from our collection of sequences. 
@@ -203,6 +201,7 @@ Finally, we will divide the table containing no chimeras with the table containi
 
 ```{r}
 sum(seqtab.nochim)/sum(seqtab)
+```
 
 As a final check of our progress, we will look at the number of reads that made it through each step in the pipeline using the commands below:
 
@@ -439,16 +438,11 @@ p_abun_stacked
 
 ## Other Graphing Options 
 
-The 16S Amplicon Sequence Variant Processing Pipeline includes other graphs that can be made using ggplot2. The scripts to produce these graphs will be included below. 
+The 16S Amplicon Sequence Variant Processing Pipeline includes other graphs that can be made using ggplot2. The scripts to produce these graphs will be included below. More detailed instructions can be found in the script accompanying this README file. 
+
+To produce a geom_point graph, where the size of points reflect taxonomic relative abundance, the following script can be employed. 
 
 ```{r}
-# To begin, taxa_abundance_table_order$Abundance[taxa_abundance_table_order$Abundance == 0] <- NA ensures that points representing a 0% relative abundance will not be displayed. 
-# We will use ggplot() to produce this graph. 
-# We will use taxa_abundance_table_order as our data input, rather than o_realabun, as ggplot() requires us to use a data frame for plotting.
-# aes() is used here for mapping and aesthetics purposes. We state that samples will be displayed on the x-axis, Order on the y-axis, and that the size of our points will represent an Order's relative abundance. 
-# geom_point(aes(colour=Order)) tells ggplot to make a geom_point graph, and that each point's colour should correspond to its Order.
-# scale_size_continuous() allows us to adjust the minimum and maximum size of our points as needed. We set the range from 1-10 to ensure points are distinguishable from one another. 
-# Lastly, labs tells us that we've set our title to "Relative Abundance by Order in Sub-Marine South Pacific Ocean Volcano Pumice Rock". It also informs us we've named our x-axis "Sample", our y-axis "Order" and our size legend "Relative Abundance (%)"
 taxa_abundance_table_order$Abundance[taxa_abundance_table_order$Abundance == 0] <- NA
 ggplot(data = taxa_abundance_table_order, aes(x = Sample, y = Order, size = Abundance)) +
   geom_point(aes(colour=Order)) +
@@ -456,16 +450,9 @@ ggplot(data = taxa_abundance_table_order, aes(x = Sample, y = Order, size = Abun
   labs(title = "3-4cm Core DNA and cDNA & Cyanobacterial Viability Assay Relative Abundance by Phylum", x = "Sample ", y = "Order", size = "Relative Abundance (%)")
 ```
 
-# To answer Part 3, we can produce a heatmap or geom_tile graph of Relative Abundance by Phylum using ggplot2. 
+To produce a heatmap, which uses colour to display relative abundance, the following script can be used. 
 
 ```{r}
-# We will use ggplot() to produce this graph. 
-# We will use taxa_abundance_table_phylum as our data input, rather than p_realabun, as ggplot()  requires us to use a data frame for plotting.
-# aes() is used here for mapping and aesthetics purposes. We state that samples will be displayed on the x-axis, Phylum on the y-axis, and that the fill of our tiles will align with relative abundance.
-# geom_tile() tells ggplot to make a geom_tile plot, which displays data as a tiled plane of rectangles.
-# scale_fill_gradientn() allows us to create a color palette to help us express relative abundance with colour. In this case, the warmer the colour, the more abundant a Phylum is.
-# labs() tells us that we've set our title to "Heatmap of Relative Abundance by Phylum in Sub-Marine South Pacific Ocean Volcano Pumice Rock". It also informs us we've named our x-axis "Sample", our y-axis "Phylum" and our fill legend "Relative Abundance (%)".
-# Lastly, theme(plot.title = element_text(hjust = 0.5)) ensures our title is centered over our heatmap. 
 ggplot(taxa_abundance_table_phylum, aes(x = Sample, y = Phylum, fill = Abundance)) +
   geom_tile() +
   scale_fill_gradientn(colors = c("darkgreen", "yellow", "red")) +
@@ -474,23 +461,25 @@ ggplot(taxa_abundance_table_phylum, aes(x = Sample, y = Phylum, fill = Abundance
        y = "Phylum",
        fill = "Relative Abundance (%)") +
   theme(plot.title = element_text(hjust = 0.5))
-
-
-
-# Features:
-A list or description of the main functionalities and capabilities of the project.
+```
 
 # Technologies Used:
-A list of programming languages, frameworks, libraries, and other tools utilized in the project.
+
+This pipeline utilizes R Studio to process and visualize 16S amplicon sequence variant data. dada2, phyloseq, Biostrings, ggplot2, RColorBrewer and tidyverse are used in this pipeline. 
 
 # Known Issues or Limitations:
-A section detailing any known bugs, limitations, or areas for improvement.
 
-- downloading packages
+The phyloseq link denoted above can also be used to troubelshoot its installation. Issues with installing packages may be attributed to the version of R Studio you are working with. Ensure installation of packages compatible your system's version of R Studio. You may need to install newer versions of some packages such that they can be used. 
 
 # License:
-Information about the project's licensing, specifying how others can use and distribute the code.
+
+This script is not licensed. It can be accessed and distributed by the public via github.
+
 
 # Contact Information and Acknowledgments:
-Details on how to contact the project maintainers or authors.
-Acknowledgments for any external contributions, resources, or inspirations.
+
+The dada2 portion of this script was adapted from the following pipeline: 
+
+https://benjjneb.github.io/dada2/tutorial.html
+
+The phyloseq portion of this script can be attributed to Lecture 6 from Jacqueline Goordial's Bioinformatics for Environmental Sciences graduate course (ENVS*6452) taught at the University of Guelph. 
