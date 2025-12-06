@@ -385,50 +385,97 @@ We will begin with creating a bar graph of our sample's absolute abundance by Ph
 phylum_barplot <- plot_bar(physeq, fill = "Phylum")
 phylum_barplot
 ```
-Here, the space between each dark line represents the absolute abundance of a particular ASV. We can use the script below to remove these dark lines from our graph
+Here, the space between each dark line represents the absolute abundance of a particular ASV. We can use the script below to remove these dark lines from our graph.
 
 ```{r}
 phylum_barstacked <- phylum_barplot + geom_bar(aes(fill=Phylum), stat="identity", position="stack")
 phylum_barstacked
 ```
 
-Next, to create a relative abundance plot. We will first step will use the tax_glom() PHYLOSEQ function to "glom" together ASVs based on our taxonomic assignment of choice. In this case, we will be combining our taxonomic data by Phylum to visualize downstream Phyla relative abundance.
+Now, we will use the tax_glom() phyloseq function to "glom" together ASVs based on our taxonomic assignment of choice. In this example, we will combine our taxonomic data by Phylum to visualize relative abundance by Phylum.
 
 ```{r}
 g_phylum <- tax_glom(physeq, "Phylum")
 ```
 
+Next we will use plot_bar() to plot our "glommed" g_phylum graph. This graph will allow us to observe the absolute abundance distribution of our samples more easily.
+
 ```{r}
-# The next command uses the plot_bar() function to plot our "glommed" g_phylum graph. We can use this graph to observe the differences in Phylum abundance more easily.
 plot_bar(g_phylum, fill="Phylum")
 ```
+Now that we've "glommed" together our taxa by Phylum, we can make a relative abundance graph from our absolute abundance data. We can do this by tallying up the ASVs within each taxa in one sample, and dividing by its total number of ASVs. Then we can use psmelt() to remove phyloseq's formatting and make the data easier to plot.
 
 ```{r}
-# Now that we've "glommed" together our taxa by Phylum, we can make a relative abundance graph from our absolute abundance data. We can do this by tallying up the ASVs within each taxa in one sample, and dividing by its total number of ASVs. Then we can use psmelt() to remove phyloseq's formatting and make the data easier to plot.
 ps_phylum_relabun <- transform_sample_counts(g_phylum, function(ASV) ASV/sum(ASV))
 taxa_abundance_table_phylum <- psmelt(ps_phylum_relabun)
+```
 
-# Lastly, we will factor our Phylum values for downstream graphing. 
+We will then factor our Phylum values for downstream graphing.
+
+```{r} 
 taxa_abundance_table_phylum$Phylum<-factor(taxa_abundance_table_phylum$Phylum)
 ```
 
+Here we will save our relative abundance table as a .csv file for easy access downstream.  
+
 ```{r}
-# Here we will save our relative abundance table as a .csv file for easy access downstream.  
 write.csv(taxa_abundance_table_phylum, file = "/Users/sarahcorkery/Desktop/ASV Processing/CorkeryV4V5/new_fastq/output_files/CorkeryV4V5RelativeAbundance.csv")
 ```
 
+The following command uses plot_bar() to create a relative abundance table of our samples by Phylum. 
+
 ```{r}
-# The following command uses plot_bar() to create a relative abundance table of our samples by Phylum. Here, we're plotting our absolute abundance PHYLOSEQ object ps_phylum_relabun. We state the fill of our bars using Phylum, and assign a title and axes titles using the labs() command. In order to fit the title below above our graph, we must set its size to 12 using the theme() command. 
 p_realabun<-plot_bar(ps_phylum_relabun, fill = "Phylum") + labs(y="Relative Abundance (%)", x= "Sample", title = "3-4cm Core DNA and cDNA & Cyanobacterial Viability Assay Relative Abundance") + theme(plot.title = element_text(size = 12))
 p_realabun
 ```
 
-# As mentioned, paste the script in the chunk above into the console to be able to export this graph. 
+Should we desire to eliminate the dark lines present between each Phylum, we can assign the position argument within ggplot2's geom_bar() function as "stack".
 
 ```{r}
-# Should we desire to eliminate the dark lines present between each Phylum, we can assign the position argument within ggplot2's geom_bar() function as "stack":
 p_abun_stacked<- p_realabun + geom_bar(aes(fill=Phylum), stat="identity", position="stack")
 p_abun_stacked
+```
+* Note: The script above can be adapted to graph the relative abundance of other taxonomic assignments (i.e., Order, Family, etc.)  
+
+## Other Graphing Options 
+
+The 16S Amplicon Sequence Variant Processing Pipeline includes other graphs that can be made using ggplot2. The scripts to produce these graphs will be included below. 
+
+```{r}
+# To begin, taxa_abundance_table_order$Abundance[taxa_abundance_table_order$Abundance == 0] <- NA ensures that points representing a 0% relative abundance will not be displayed. 
+# We will use ggplot() to produce this graph. 
+# We will use taxa_abundance_table_order as our data input, rather than o_realabun, as ggplot() requires us to use a data frame for plotting.
+# aes() is used here for mapping and aesthetics purposes. We state that samples will be displayed on the x-axis, Order on the y-axis, and that the size of our points will represent an Order's relative abundance. 
+# geom_point(aes(colour=Order)) tells ggplot to make a geom_point graph, and that each point's colour should correspond to its Order.
+# scale_size_continuous() allows us to adjust the minimum and maximum size of our points as needed. We set the range from 1-10 to ensure points are distinguishable from one another. 
+# Lastly, labs tells us that we've set our title to "Relative Abundance by Order in Sub-Marine South Pacific Ocean Volcano Pumice Rock". It also informs us we've named our x-axis "Sample", our y-axis "Order" and our size legend "Relative Abundance (%)"
+taxa_abundance_table_order$Abundance[taxa_abundance_table_order$Abundance == 0] <- NA
+ggplot(data = taxa_abundance_table_order, aes(x = Sample, y = Order, size = Abundance)) +
+  geom_point(aes(colour=Order)) +
+  scale_size_continuous(range = c(1, 10)) +
+  labs(title = "3-4cm Core DNA and cDNA & Cyanobacterial Viability Assay Relative Abundance by Phylum", x = "Sample ", y = "Order", size = "Relative Abundance (%)")
+```
+
+# To answer Part 3, we can produce a heatmap or geom_tile graph of Relative Abundance by Phylum using ggplot2. 
+
+```{r}
+# We will use ggplot() to produce this graph. 
+# We will use taxa_abundance_table_phylum as our data input, rather than p_realabun, as ggplot()  requires us to use a data frame for plotting.
+# aes() is used here for mapping and aesthetics purposes. We state that samples will be displayed on the x-axis, Phylum on the y-axis, and that the fill of our tiles will align with relative abundance.
+# geom_tile() tells ggplot to make a geom_tile plot, which displays data as a tiled plane of rectangles.
+# scale_fill_gradientn() allows us to create a color palette to help us express relative abundance with colour. In this case, the warmer the colour, the more abundant a Phylum is.
+# labs() tells us that we've set our title to "Heatmap of Relative Abundance by Phylum in Sub-Marine South Pacific Ocean Volcano Pumice Rock". It also informs us we've named our x-axis "Sample", our y-axis "Phylum" and our fill legend "Relative Abundance (%)".
+# Lastly, theme(plot.title = element_text(hjust = 0.5)) ensures our title is centered over our heatmap. 
+ggplot(taxa_abundance_table_phylum, aes(x = Sample, y = Phylum, fill = Abundance)) +
+  geom_tile() +
+  scale_fill_gradientn(colors = c("darkgreen", "yellow", "red")) +
+  labs(title = "Heatmap of Relative Abundance by Phylum in 3-4cm Core DNA and cDNA & Cyanobacterial Viability Assay",
+       x = "Sample",
+       y = "Phylum",
+       fill = "Relative Abundance (%)") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+
 
 # Features:
 A list or description of the main functionalities and capabilities of the project.
