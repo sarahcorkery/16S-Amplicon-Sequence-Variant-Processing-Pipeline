@@ -1,5 +1,5 @@
 # 16S-Amplicon-Sequence-Variant-Processing-Pipeline
-This README file provides an overview of the features and workflow steps included in the R Studio 16S amplicon sequence variant (ASV) processing pipeline script. The first section of the script utilizes DADA2 to identify and quantify ASVs from 16S amplicon sequencing data. The subsequent section uses phyloseq to visualize the relative abundance of the processed amplicon sequencing data, facilitating effective interpretation of microbial community composition.
+This README file provides an overview of the features and workflow steps included in the R Studio 16S amplicon sequence variant (ASV) processing pipeline script. The first section of the script utilizes dada2 to identify and quantify ASVs from 16S amplicon sequencing data. The subsequent section uses phyloseq to visualize the relative abundance of the processed amplicon sequencing data, facilitating effective interpretation of microbial community composition.
 
 # Installation Instructions 
 ## dada2 
