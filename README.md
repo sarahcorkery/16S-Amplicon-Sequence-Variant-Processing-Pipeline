@@ -1,5 +1,5 @@
 # 16S-Amplicon-Variant-Sequence-Processing-Pipeline
-The following a pipeline processing 16S amplicon variant sequence (ASV) data. The DADA2 portion of this script will allow us to process amplicon sequencing data to identify and quantify ASVs. The latter portion of this script uses PHYLOSEQ to visualize the relative abundance of our processed amplicon sequencing data.
+The following is a README file detailing the use of an 16S amplicon sequence variant (ASV) processing pipeline. The dada2 portion of this script allows for processing of amplicon sequencing data to identify and quantify ASVs. The latter portion of this script uses phyloseq to visualize the relative abundance of our processed amplicon sequencing data.
 
 # Installation Instructions 
 ## dada2 
@@ -23,7 +23,7 @@ library(dada2); packageVersion("dada2")
 
 ## SILVA
 
-To assign taxonomy later in this pipeline, we will be using SILVA. 
+To assign taxonomy later in the pipeline, we will be using SILVA. 
 
 Using the link below, we will download the most recent version of SILVA, version 138.2 to our computer.
 
