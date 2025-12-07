@@ -133,7 +133,9 @@ To visualize the quality profiles of reverse reads:
 plotQualityProfile(fnRs[1:2])
 ```
 
-Reads can now be trimmed and filtered using the filterAndTrim() function. We will use standard filtering parameters: maxN=0, truncQ=2, rm.phix=TRUE and maxEE=c(2,2). The maxEE parameter sets the maximum number of “expected errors” allowed in a read, which is a better filter than simply averaging quality scores. Be sure to change your truncLen parameter to reflect the lengths you want to truncate your forward and reverse reads to.
+Reads can now be trimmed and filtered using the filterAndTrim() function. We will use standard filtering parameters: maxN=0, truncQ=2, rm.phix=TRUE and maxEE=c(2,2). The maxEE parameter sets the maximum number of “expected errors” allowed in a read, which is a better filter than simply averaging quality scores. Be sure to change your truncLen parameter to reflect the lengths you want to trim your forward and reverse reads to. 
+
+When truncating reads, you need to make sure you're leaving at least a 50 base pair overlap between forward and reverse reads, as this is necessary for the merging of reads. If you have no sequences left after trimming, you were too stringent.  
 
 ```{r}
 out <- filterAndTrim(fnFs, filtFs, fnRs, filtRs,
@@ -145,12 +147,13 @@ head(out)
 
 ## Step Three: Evaluate Error Rates
 
-The next step involves estimating error rates from our sequencing data using the learnErrors() function. dada2's algorithm uses a parametric error model to distinguish true biological sequences from sequencing errors. Error rates quantify the likelihood of specific nucleotide transitions (e.g., A→C, A→G) that may occur during sequencing. By accurately modeling these errors, DADA2 achieves higher taxonomic resolution than traditional approaches based on operational taxonomic units (OTUs).
+The next step involves estimating error rates from our sequencing data using the learnErrors() function. dada2's algorithm uses a parametric error model to distinguish true biological sequences from sequencing errors. Error rates quantify the likelihood of specific nucleotide transitions (e.g., A→C, A→G) that may occur during sequencing. By accurately modeling these errors, dada2 achieves higher taxonomic resolution than traditional approaches based on operational taxonomic units (OTUs).
 
 ```{r}
 errF <- learnErrors(filtFs, multithread=TRUE)
 errR <- learnErrors(filtRs, multithread=TRUE)
 ```
+
 To visualize your error rates, use the script below. 
 
 ```{r}
@@ -442,7 +445,7 @@ p_abun_stacked
 
 ## Other Graphing Options 
 
-The 16S Amplicon Sequence Variant Processing Pipeline includes other graphs that can be made using ggplot2. The scripts to produce these graphs will be included below. More detailed instructions can be found in the main script. 
+The 16S Amplicon Sequence Variant Processing Pipeline features code to produce relative abundance graphs using ggplot2. This code will be included below. More detailed instructions can be found in the attached script. 
 
 To produce a geom_point graph, where the size of points reflect taxonomic relative abundance, the following script can be employed. 
 
@@ -473,9 +476,31 @@ This pipeline utilizes R Studio to process and visualize 16S amplicon sequence v
 
 # Known Issues or Limitations:
 
+## Concerning filtering and trimming reads in Usage Instructions - dada2 Processing
+
+### Step Two: Quality Control 
+
+Recall that when truncating reads you must leave at least a 50 base pair overlap between forward and reverse reads, as this is necessary for the merging. If you have no sequences left after trimming, you were too stringent.  
+
+If you want to speed up downstream computation, consider tightening maxEE. If too few reads are passing the filter, consider relaxing maxEE, perhaps especially on the reverse reads (i.e., maxEE=c(2,5)), and reducing the truncLen to remove low quality tails. Remember though, when choosing truncLen for paired-end reads you must maintain overlap after truncation in order to merge them later.
+
+### Step Four: Merge Paired-End Reads
+
+Sequences that are much longer or shorter than expected may be the result of non-specific priming. You can remove non-target-length sequences from your sequence table (i.e., seqtab2 <- seqtab[,nchar(colnames(seqtab)) %in% 250:256]). This is analogous to “cutting a band” in-silico to get amplicons of the targeted length.  
+
+A low number of merged sequences may be the result of stringent truncation. 
+
+### Step Five: Evaluate and Identify ASVs
+
+Oftentimes, large removals of chimeric reads are a result of failure to remove ambiguous nucleotide primer sequences prior to dada2 pipeline processing. In addition, there is a higher risk for chimeras if reads lack necessary overlap for merging.
+
+## Concerning Issues with Installation  
+
 The phyloseq link stated above can also be used to troubleshoot its installation. Issues with installing packages may be attributed to the version of R Studio you are working with. Ensure installation of packages compatible with your system's version of R Studio. You may need to install newer versions of some packages for compatibility purposes. 
 
 Ensure the most recent version of SILVA is used to assign taxonomy. Be sure it is accessible on your system using the path you input in the assignTaxonomy() function. 
+
+## Concerning Script Compatibility 
 
 Portions of this script will need to be edited such that they can be used by your system. For instance, you must manually denote where your working directory is, rather than using the filler name displayed in this file. In addition, since this script was adapted for a Mac, it may need to be altered such that it is compatible with your system. You may use the link below for troubleshooting purposes. 
 
