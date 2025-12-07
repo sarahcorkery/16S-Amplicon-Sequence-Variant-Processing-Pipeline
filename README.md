@@ -222,7 +222,7 @@ head(track)
 
 For step six, we will assign taxonomy to our sequences using the assignTaxonomy() function. This function requires appropriately formatted FASTA files containing taxonomically classified reference sequences to use as a training dataset. To facilitate this process, we must download the SILVA taxonomy database, which provides the necessary reference sequences for accurate taxonomic assignment.
 
-We must state the path to this file on our computer in the assignTaxonomy() function below. Using the command below, we tell dada2 to assign taxonomy to our seqtab.nochim matrix, which contains our non-chimeric ASVs and their abundances.
+We must state the path to this file on our computer in the assignTaxonomy() function below. Using the script below, we tell dada2 to assign taxonomy to our seqtab.nochim matrix, which contains our non-chimeric ASVs and their abundances.
 
 ```{r}
 taxa <- assignTaxonomy(seqtab.nochim, "/path_to_silva/Silva/silva_nr99_v138.2_toSpecies_trainset.fa.gz", multithread=TRUE)
@@ -234,7 +234,7 @@ Below, the addSpecies() function will assign species-level annotation to our tax
 taxa <- addSpecies(taxa, "/path_to_silva/Silva/silva_v138.2_assignSpecies.fa.gz")
 ```
 
-Lastly, we will inspect the taxonomic assignmnet by removing sequence rownames for display purposes only
+Lastly, we will inspect the taxonomic assignment by removing sequence rownames for display purposes.
 
 ```{r}
 taxa.print <- taxa
