@@ -180,9 +180,9 @@ mergers <- mergePairs(dadaFs, filtFs, dadaRs, filtRs, verbose=TRUE)
 
 ## Step Five: Evaluate and Identify ASVs 
 
-An ASV is a unique, error-corrected DNA sequences from amplified marker genes that represent true biological variation. ASVs are grouped only when they share 100% sequence identity, offering greater precision than OTUs, which require only a 97% similarity threshold. Hence, dada2 only makes species level assignments based on exact matching between ASVs and sequenced reference strains.
+ASVs are unique, error-corrected DNA sequences from amplified marker genes that represent true biological variation. ASVs are grouped only when they share 100% sequence identity, offering greater precision than OTUs, which require only a 97% similarity threshold. Hence, dada2 only makes species level assignments based on exact matching between ASVs and sequenced reference strains.
 
-Let's start step five with constructing an ASV table, a higher-resolution version of the OTU table produced by traditional methods.
+Let's begin step five by constructing an ASV table, a higher-resolution version of the OTU table produced by traditional methods.
 
 ```{r}
 seqtab <- makeSequenceTable(mergers)
