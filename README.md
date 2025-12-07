@@ -1,5 +1,5 @@
 # 16S-Amplicon-Sequence-Variant-Processing-Pipeline
-The following is a README file detailing the use of an 16S amplicon sequence variant (ASV) processing pipeline. The dada2 portion of this script allows for processing of amplicon sequencing data to identify and quantify ASVs. The latter portion of this script uses phyloseq to visualize the relative abundance of our processed amplicon sequencing data.
+This README provides an overview of the features and workflow steps included in the R Studio 16S amplicon sequence variant (ASV) processing pipeline script. The first section of the script utilizes DADA2 to identify and quantify ASVs from 16S amplicon sequencing data. The subsequent section uses phyloseq to visualize the relative abundance of the processed amplicon sequencing data, facilitating effective interpretation of microbial community composition.
 
 # Installation Instructions 
 ## dada2 
@@ -8,14 +8,14 @@ This pipeline uses a plethora of dada2 functions to process and quantify amplico
 
 https://benjjneb.github.io/dada2/dada-installation.html
 
-The following script from the installation link was pasted into the console to download dada2. 
+The following script from the installation link can be pasted into R Studio's console to download dada2.  
 
 ```{r}
 if (!requireNamespace("BiocManager", quietly = TRUE))
 install.packages("BiocManager")
 BiocManager::install("dada2")
 ```
-Be sure to load dada2's library prior to beginning work. 
+Be sure to load dada2's library into R Studio's environment prior to beginning work. 
 
 ```{r}
 library(dada2); packageVersion("dada2")
@@ -37,14 +37,14 @@ Installation instructions for phyloseq can be found at the following link.
 
 https://www.bioconductor.org/packages/release/bioc/html/phyloseq.html
 
-The following script from the installation link was pasted into the console to download phyloseq. 
+The following script from the installation link can be pasted into R Studio's console to download phyloseq. 
 
 ```{r}
 if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 BiocManager::install("phyloseq")
 ```
-The remaining packages required for this portion of the pipeline can be installed in the console using the script below. 
+The remaining packages required for this portion of the pipeline can be installed by pasting the following script into R Studio's console.
 
 ```{r}
 install.packages("Biostrings")
@@ -52,6 +52,7 @@ install.packages("ggplot2")
 install.packages("RColorBrewer")
 install.packages("tidyverse")
 ```
+
 Be sure to load these package's libraries prior to beginning work. 
 
 ```{r}
@@ -64,7 +65,7 @@ library(tidyverse)
 
 # Usage Instructions - dada2 Processing
 
-The following code will outline the main steps of 16S Amplicon Sequence Variant processing pipeline. 
+The following code will outline the main steps of the R Studio 16S Amplicon Sequence Variant processing pipeline. 
 
 ## Step One: Experimental Design 
 
@@ -72,26 +73,27 @@ This step should be completed prior to 16S ASV processing. Please consider the f
 
 ### Sequencing Depth: 
 
-How many sequencing runs (or depth) do you require per sample? The standard number of sequencing runs per sample is 10,000 or 1x, and tends to be sufficient (Lundin et al. 2012). Should you desire high sequencing diversity, you will likely require more runs. Check relevant existing literature to determine what a good depth for your work may be. This pipeline will use 1x sequencing depth. 
+How many sequencing runs (or depth) do you require per sample? The standard number of sequencing runs per sample is 10,000 or 1x depth, and tends to be sufficient (Lundin et al. 2012). Should you desire high sequencing diversity, you will likely require more runs. Check relevant literature to determine what a good depth for your work may be. This pipeline will use data sequenced at a 1x sequencing depth. 
 
 ### Primer Bias: 
 
-Different primers tend to work better for different organisms. Choose 16S primers based on the qualities of the organisms your are working with. 
+Different primers work better with different organisms. Choose 16S primers based on the qualities of the bacteria (or archaea) you are working with. 
 
 ### Amplicon Size:
 
-We will be created paired-end reads, which are forward and reverse reads joined by a small overlap region. The longer these are, the better. Unfortunately, the length of your reads (or ASVs) is limited by your choice of sequencing method.
+We will be creating paired-end reads, which are forward and reverse reads joined by a small overlap region. The longer these are, the better. Pay mind, as the length of your reads (or ASVs) is limited by your choice of sequencing method.
 
 ## Step Two: Initial Preparation
 
-First, you must saving your raw sequencing files to where you intend to set your working directory. Once they have been moved to your desired location, unzip your fastq.gz files. Ensure they are .fastq files before moving forward. 
+First, you must saving your raw sequencing files to where you intend to set your working directory. Once they have been moved to your desired location, unzip your fastq.gz files. Ensure they have the extension .fastq, not .fastq.gz before moving forward. 
 
-Next, we will assign our working directory. Be sure to set your working directory to where your sequence files are located!
+Next, we will set our working directory. Be sure to do so where your sequence files are located!
 
 ```{r}
 setwd("state_working_directory_here")
 ```
-To make the location to these files more easily accessible for downstream commands, be sure to assign your working directory (i.e., where our files are located) to an object called path.
+
+To make the location of these files more easily accessible for downstream commands, be sure to assign your working directory (i.e., where our files are located) to an object called path.
 
 ```{r}
 path<-"state_working_directory_here"
@@ -112,26 +114,24 @@ sample.names <- sapply(strsplit(basename(fnFs), "_"), `[`, 1)
 
 ## Step Two: Quality Control
 
-The input for the 16S ASV Processsing Pipeline and raw output from your sequencing center will be a .fastq file. These files contain your raw sequencing data and the quality scores associated with each base pair. It is not readable via your text editor. 
+The input for the 16S ASV Processsing Pipeline and raw output from your sequencing center will be a .fastq file. These files contain your raw sequencing data and the quality scores associated with each base pair. 
 
 Most often, excluding those generated using Nanopore, your reads will be paired-end and need to be assembled. Prior to assembling our reads, we must trim our sequences to remove low quality base pairs. We will aim to trim away base pairs below a quality score of 30. This is imperative as poor quality data can yield inaccurate results. 
 
-To check the quality of your forward and reverse reads, the following code is used: 
+To check the quality of your forward and reverse reads, the following code can be used: 
 
-To visualize the quality profiles of our forward reads:
+To visualize the quality profiles of forward reads:
 
 ```{r}
 plotQualityProfile(fnFs[1:2])
 ```
-To visualize the quality profiles of our reverse reads:
+To visualize the quality profiles of reverse reads:
 
 ```{r}
 plotQualityProfile(fnRs[1:2])
 ```
 
-We will trim and filter our reads using the filterAndTrim() function. We’ll use standard filtering parameters: maxN=0 (DADA2 requires no Ns, the second it can't decipher a nucleotide it'll through the whole sequence out), truncQ=2, rm.phix=TRUE and maxEE=c(2,2) (maxEE allows two errors per read in the forward and reverse reads). The maxEE parameter sets the maximum number of “expected errors” allowed in a read, which is a better filter than simply averaging quality scores. 
-
-Be sure to change your truncLen parameter to reflect the lengths you want to truncate your forward and reverse reads to.
+Reads can now be trimmed and filtered using the filterAndTrim() function. We will use standard filtering parameters: maxN=0, truncQ=2, rm.phix=TRUE and maxEE=c(2,2). The maxEE parameter sets the maximum number of “expected errors” allowed in a read, which is a better filter than simply averaging quality scores. Be sure to change your truncLen parameter to reflect the lengths you want to truncate your forward and reverse reads to.
 
 ```{r}
 out <- filterAndTrim(fnFs, filtFs, fnRs, filtRs,
@@ -143,7 +143,7 @@ head(out)
 
 ## Step Three: Evaluate Error Rates
 
-Next, we will estimate error rates from our sequencing data as dada2's algorithm relies on a parametric error model to distinguish true biological sequences from sequencing errors. An error rates measures how likely any transition (i.e., A->C, A->G) occurred during sequencing of your data. dada2 does this through the # learnErrors() function. This will give us higher taxonomic resolution compared to what operational taxonomic units would provide.
+The next step involves estimating error rates from our sequencing data using the learnErrors() function. dada2's algorithm uses a parametric error model to distinguish true biological sequences from sequencing errors. Error rates quantify the likelihood of specific nucleotide transitions (e.g., A→C, A→G) that may occur during sequencing. By accurately modeling these errors, DADA2 achieves higher taxonomic resolution than traditional approaches based on operational taxonomic units (OTUs).
 
 ```{r}
 errF <- learnErrors(filtFs, multithread=TRUE)
@@ -155,9 +155,9 @@ To visualize your error rates, use the script below.
 plotErrors(errF, nominalQ=TRUE)
 ```
 
-We can tell if our rates are good or bad based on whether the estimated error rates (red lines) are a good fit to the observed rates (black lines). If there is too much divergence, our data may not be useable. 
+We can tell if our rates are good or bad based on whether the estimated error rates (red lines) follow observed error rate (black lines) trends. If there is too much divergence, our data may not be useable. 
 
-Finally, we will apply the core sample inference algorithm to our filtered and trimmed sequence data. With this command we take each sample's reads and use our error rates to infer which sequences are real biological variants and which are sequencing errors. dada() then infers the true error-free ASVs in each sample and how many reads belong to each.
+Finally, we will apply dada2's core sample inference algorithm to our filtered and trimmed sequence data. With this command we take each sample's reads and use our error rates to infer which sequences are real biological variants and which are sequencing errors. dada() then infers the true error-free ASVs in each sample and how many reads belong to each.
  
 ```{r}
 dadaFs <- dada(filtFs, err=errF, multithread=TRUE)
@@ -167,7 +167,7 @@ dadaFs[[1]]
 
 ## Step Four: Merge Paired-End Reads
 
-For our next step, we will merge our denoised forward and reverse reads to obtain the full denoised sequences. Merging is performed by aligning the denoised forward reads with the reverse-complement of the corresponding denoised reverse reads, to construct our merged “contig” sequences. 
+For our next step, we will merge our denoised forward and reverse reads to obtain the full denoised sequences. Merging is performed by aligning the denoised forward reads with the reverse-complement of the corresponding denoised reverse reads. This allows dada2 to construct merged “contig” sequences. 
 
 ```{r}
 mergers <- mergePairs(dadaFs, filtFs, dadaRs, filtRs, verbose=TRUE)
@@ -175,7 +175,7 @@ mergers <- mergePairs(dadaFs, filtFs, dadaRs, filtRs, verbose=TRUE)
 
 ## Step Five: Evaluate and Identify ASVs 
 
-An ASV is a unique, error-corrected DNA sequences from amplified marker genes that represent true biological variation. Amplicon sequence variants (ASVs) are grouped only when they share 100% sequence identity, offering greater precision than operational taxonomic units (OTUs), which require only a 97% similarity threshold.
+An ASV is a unique, error-corrected DNA sequences from amplified marker genes that represent true biological variation. ASVs are grouped only when they share 100% sequence identity, offering greater precision than OTUs, which require only a 97% similarity threshold. Hence, dada2 only makes species level assignments based on exact matching between ASVs and sequenced reference strains.
 
 Let's start step five with constructing an ASV table, a higher-resolution version of the OTU table produced by traditional methods.
 
@@ -197,7 +197,7 @@ seqtab.nochim <- removeBimeraDenovo(seqtab, method="consensus", multithread=TRUE
 dim(seqtab.nochim)
 ```
 
-Finally, we will divide the table containing no chimeras with the table containing chimeras, to get a percentage of chimeric sequences in our original list of ASVs. 
+To get a percentage of chimeric sequences in our original list of ASVs, we can divide the table containing no chimeras with the table containing chimeras.
 
 ```{r}
 sum(seqtab.nochim)/sum(seqtab)
@@ -215,15 +215,15 @@ head(track)
 
 ## Step Six: Assign Taxonomy
 
-For step six, we will assign taxonomy to our sequences using the assignTaxonomy() function. This function requires appropriately formatted FASTA files containing taxonomically classified reference sequences to use as a training dataset. To facilitate this process, we will download the SILVA taxonomy database, which provides the necessary reference sequences for accurate taxonomic assignment.
+For step six, we will assign taxonomy to our sequences using the assignTaxonomy() function. This function requires appropriately formatted FASTA files containing taxonomically classified reference sequences to use as a training dataset. To facilitate this process, we must download the SILVA taxonomy database, which provides the necessary reference sequences for accurate taxonomic assignment.
 
-We must state the path to this file on our computer in the assignTaxonomy() function below. Using the command below, we tell DADA2 to assign taxonomy to our seqtab.nochim matrix, which contains our non-chimeric ASVs and their abundances.
+We must state the path to this file on our computer in the assignTaxonomy() function below. Using the command below, we tell dada2 to assign taxonomy to our seqtab.nochim matrix, which contains our non-chimeric ASVs and their abundances.
 
 ```{r}
 taxa <- assignTaxonomy(seqtab.nochim, "/path_to_silva/Silva/silva_nr99_v138.2_toSpecies_trainset.fa.gz", multithread=TRUE)
 ```
 
-dada2 only makes species level assignments based on exact matching between ASVs and sequenced reference strains. Below, the addSpecies() function will assign species-level annotation to our taxonomic table.
+Below, the addSpecies() function will assign species-level annotation to our taxonomic table.
 
 ```{r} 
 taxa <- addSpecies(taxa, "/path_to_silva/Silva/silva_v138.2_assignSpecies.fa.gz")
@@ -249,7 +249,7 @@ write.csv(seqtab.nochim, file = "/state_working_directory_here/insert_your_file_
 write.csv(track, file = "/state_working_directory_here/insert_your_file_name_here_TRACK.csv")
 ```
 
-Using the commands below, we can read in the taxa, seqtab.nochim and track objects using the .csv files we made in the previous step. This is essential in the event our objects are lost or we terminate our R studio session:
+Using the commands below, we can read in the taxa, seqtab.nochim and track objects using the .csv files we made in the previous step.
 
 ```{r}
 taxa <- read.csv(file = "/state_working_directory_here/insert_your_file_name_here_TAXA.csv")
@@ -263,7 +263,7 @@ In the next set of chunks, we will change the formatting of our seqtab.nochim ta
 
 ## Step One: Formatting for phyloseq
 
-### Step A: To begin this process, we will first transpose our seqtab.nochim table. You must use the imported seqtab.nochim object (fromm the .csv) in the previous step for this step to run properly.
+### Step A: To begin this process, we will first transpose our seqtab.nochim table. You must use the seqtab.nochim object from our imported .csv file for this step to run properly.
 
 ```{r}
 flipped_seqtab.nochim <- as.data.frame(t(seqtab.nochim))
@@ -307,7 +307,7 @@ OTUabund<-cbind(flipped_seqtab.nochim,taxa)
 write.csv(OTUabund,file="/state_working_directory_here/insert_your_file_name_here_OTUabund.csv")
 ```
 
-### Step H: DADA2 generates the taxa object with sequences in the first column, a format incompatible with PHYLOSEQ. To ensure compatibility, we will remove this column using the command below. 
+### Step H: DADA2 generates the taxa object with sequences in the first column, a format incompatible with phyloseq. To ensure compatibility, we will remove this column using the command below. 
 
 ```{r}
 taxa <-taxa[-1]
@@ -323,13 +323,13 @@ View(taxa)
 
 Next, we will continue to format our data such that it can be used by phyloseq. 
 
-First, we will create a phyloseq object called "taxmat", containing our taxa data. We will turn it into a matrix such that it can be used by phyloseq.
+First, we will create a phyloseq object called "taxmat", containing our taxa data. We will turn it into a matrix so it can be used by phyloseq.
 
 ```{r}
 taxmat <- as.matrix(taxa)
 ```
 
-Next, we will make the final formatting changes to our transposed seqtab.nochim table it can be used by phyloseq. We will call this object otumat, and it will contain our ASV abundance data. Using the existing object "flipped_seqtab.nochim", we will delete the first column listing nucleotide sequences.
+Next, we will make the final formatting changes to our transposed seqtab.nochim table so it can be used by phyloseq. We will call this object otumat, and it will contain our ASV abundance data. Using the existing object "flipped_seqtab.nochim", we will delete the first column listing nucleotide sequences.
 
 ```{r}
 otumat <- flipped_seqtab.nochim[,-1]
@@ -347,6 +347,7 @@ Next, we will ensure that the row names are ASVs for both matrices. This is also
 ```{r}
 rownames(otumat) <- paste0("ASV", 1:nrow(otumat))
 rownames(taxmat) <- paste0("ASV", 1:nrow(taxmat))
+```
 
 We also must ensure R Studio recognizes our OTU data as numeric and not as character data.
 
@@ -376,7 +377,7 @@ samplenames<-sample_names(physeq)
 ```
 ## Step Three: Graph Production
 
-In the following script, we will create graphs showcasing the abundance and relative abundance of our ASVs by taxonomic rank. 
+In the following script, we will create graphs showcasing the absolute and relative abundance of our ASVs by taxa. 
 
 We will begin with creating a bar graph of our sample's absolute abundance by Phylum using the plot_bar() function.
 
@@ -402,6 +403,7 @@ Next we will use plot_bar() to plot our "glommed" g_phylum graph. This graph wil
 ```{r}
 plot_bar(g_phylum, fill="Phylum")
 ```
+
 Now that we've "glommed" together our taxa by Phylum, we can make a relative abundance graph from our absolute abundance data. We can do this by tallying up the ASVs within each taxa in one sample, and dividing by its total number of ASVs. Then we can use psmelt() to remove phyloseq's formatting and make the data easier to plot.
 
 ```{r}
@@ -438,7 +440,7 @@ p_abun_stacked
 
 ## Other Graphing Options 
 
-The 16S Amplicon Sequence Variant Processing Pipeline includes other graphs that can be made using ggplot2. The scripts to produce these graphs will be included below. More detailed instructions can be found in the script accompanying this README file. 
+The 16S Amplicon Sequence Variant Processing Pipeline includes other graphs that can be made using ggplot2. The scripts to produce these graphs will be included below. More detailed instructions can be found in the main script. 
 
 To produce a geom_point graph, where the size of points reflect taxonomic relative abundance, the following script can be employed. 
 
@@ -450,7 +452,7 @@ ggplot(data = taxa_abundance_table_order, aes(x = Sample, y = Order, size = Abun
   labs(title = "3-4cm Core DNA and cDNA & Cyanobacterial Viability Assay Relative Abundance by Phylum", x = "Sample ", y = "Order", size = "Relative Abundance (%)")
 ```
 
-To produce a heatmap, which uses colour to display relative abundance, the following script can be used. 
+To produce a heatmap, in which colour is used to display relative abundance, the following script can be used. 
 
 ```{r}
 ggplot(taxa_abundance_table_phylum, aes(x = Sample, y = Phylum, fill = Abundance)) +
@@ -469,11 +471,13 @@ This pipeline utilizes R Studio to process and visualize 16S amplicon sequence v
 
 # Known Issues or Limitations:
 
-The phyloseq link denoted above can also be used to troubelshoot its installation. Issues with installing packages may be attributed to the version of R Studio you are working with. Ensure installation of packages compatible your system's version of R Studio. You may need to install newer versions of some packages such that they can be used. 
+The phyloseq link stated above can also be used to troubleshoot its installation. Issues with installing packages may be attributed to the version of R Studio you are working with. Ensure installation of packages compatible with your system's version of R Studio. You may need to install newer versions of some packages for compatibility purposes. 
 
-Ensure the most recent version of SILVA is used to assign taxonomy. Ensure it can be accessed on your system using the path you input in assignTaxonomy(). 
+Ensure the most recent version of SILVA is used to assign taxonomy. Be sure it is accessible on your system using the path you input in the assignTaxonomy() function. 
 
-Portions of this script will need to be edited, such that they are applicable to your system. For instance, you must manually denote where your working directory is, rather than using the sample one displayed in this code. 
+Portions of this script will need to be edited, such that they can be used by your system. For instance, you must manually denote where your working directory is, rather than using the sample one displayed in this code. In addition, since this script was adapted for a Mac, it may need to  be altered such that it is compatible with your system. You may use the link below for troubleshooting purposes. 
+
+https://benjjneb.github.io/dada2/dada-installation.html
 
 # License:
 
