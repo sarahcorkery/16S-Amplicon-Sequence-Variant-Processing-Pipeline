@@ -244,7 +244,7 @@ head(taxa.print)
 
 ## Step Seven: Save your Progress
 
-Finally, we will save our taxa object, containing taxonomic assignments, our seqtab.nochim object, containing our ASVs and their abundances, and our track object, showing the remaining reads following each step of the DADA2 pipeline as .csv files. This step will allow us to save our progress, and later read in data, in the event our objects are lost or we terminate our R Studio session. 
+Finally, we will save our taxa object, containing taxonomic assignments, our seqtab.nochim object, containing our ASVs and their abundances, and our track object, showing the remaining reads following each step of the dada2 pipeline as .csv files. This step will allow us to save our progress and later read in data, in the event our objects are lost or we terminate our R Studio session. 
 
 ```{r}
 write.csv(taxa, file = "/state_working_directory_here/insert_your_file_name_here_TAXA.csv")
