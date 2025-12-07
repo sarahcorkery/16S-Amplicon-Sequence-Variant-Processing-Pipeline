@@ -491,7 +491,7 @@ ggplot(taxa_abundance_table_phylum, aes(x = Sample, y = Phylum, fill = Abundance
 
 # Technologies Used:
 
-This pipeline utilizes R Studio to process and visualize 16S amplicon sequence variant data. dada2, phyloseq, Biostrings, ggplot2, RColorBrewer and tidyverse are used in this pipeline. The most recent version of SILVA, 138.2 is employed for taxonomic assignment.
+This pipeline utilizes R Studio to process and visualize 16S amplicon sequencing data. dada2, phyloseq, Biostrings, ggplot2, RColorBrewer and tidyverse are used in this pipeline. The most recent version of SILVA, 138.2 is also employed for taxonomic assignment.
 
 # Known Issues or Limitations:
 
