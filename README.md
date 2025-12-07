@@ -135,7 +135,7 @@ plotQualityProfile(fnRs[1:2])
 
 Reads can now be trimmed and filtered using the filterAndTrim() function. We will use standard filtering parameters: maxN=0, truncQ=2, rm.phix=TRUE and maxEE=c(2,2). The maxEE parameter sets the maximum number of “expected errors” allowed in a read, which is a better filter than simply averaging quality scores. Be sure to change your truncLen parameter to reflect the lengths you want to trim your forward and reverse reads to. 
 
-When truncating reads, you need to make sure you're leaving at least a 50 base pair overlap between forward and reverse reads, as this is necessary for the merging of reads. If you have no sequences left after trimming, you were too stringent.  
+When truncating reads, you need to make sure you're leaving at least a 50 base pair overlap between forward and reverse reads, as this is necessary for merging. If you have no sequences left after trimming, you were too stringent.  
 
 ```{r}
 out <- filterAndTrim(fnFs, filtFs, fnRs, filtRs,
@@ -495,11 +495,11 @@ This pipeline utilizes R Studio to process and visualize 16S amplicon sequencing
 
 # Known Issues or Limitations:
 
-## Concerning filtering and trimming reads in Usage Instructions - dada2 Processing
+## Concerning Usage Instructions - dada2 Processing
 
 ### Step Two: Quality Control 
 
-Recall that when truncating reads you must leave at least a 50 base pair overlap between forward and reverse reads, as this is necessary for the merging. If you have no sequences left after trimming, you were too stringent.  
+Recall that when truncating reads you must leave at least a 50 base pair overlap between forward and reverse reads, as this is necessary for merging. If you have no sequences left after trimming, you were too stringent.  
 
 If you want to speed up downstream computation, consider tightening maxEE. If too few reads are passing the filter, consider relaxing maxEE, perhaps especially on the reverse reads (i.e., maxEE=c(2,5)), and reducing the truncLen to remove low quality tails. Remember though, when choosing truncLen for paired-end reads you must maintain overlap after truncation in order to merge them later.
 
