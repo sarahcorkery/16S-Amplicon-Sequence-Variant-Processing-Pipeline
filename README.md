@@ -402,12 +402,13 @@ samplenames<-sample_names(physeq)
 
 In the following script, we will create graphs showcasing the absolute and relative abundance of our ASVs by taxa. 
 
-We will begin with creating a bar graph of our sample's absolute abundance by Phylum using the plot_bar() function.
+We will begin by creating a bar graph of our sample's absolute abundance by Phylum using the plot_bar() function.
 
 ```{r}
 phylum_barplot <- plot_bar(physeq, fill = "Phylum")
 phylum_barplot
 ```
+
 Here, the space between each dark line represents the absolute abundance of a particular ASV. We can use the script below to remove these dark lines from our graph.
 
 ```{r}
