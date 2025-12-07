@@ -505,27 +505,29 @@ If you want to speed up downstream computation, consider tightening maxEE. If to
 
 ### Step Three: 
 
-If your the error rates of your data are poor, your data may not be useable. This pipeline cannot help correct the error rates of your samples. 
+If the error rates of your data are poor, your data may not be useable. This pipeline cannot help correct the error rates of your samples. 
 
 ### Step Four: Merge Paired-End Reads
 
 Sequences that are much longer or shorter than expected may be the result of non-specific priming. You can remove non-target-length sequences from your sequence table (i.e., seqtab2 <- seqtab[,nchar(colnames(seqtab)) %in% 250:256]). This is analogous to “cutting a band” in-silico to get amplicons of the targeted length.  
 
-A low number of merged sequences may be the result of stringent truncation. 
+A low number of merged sequences may be the result of stringent truncation. Consider loosening truncation parameters. 
 
 ### Step Five: Evaluate and Identify ASVs
 
 Oftentimes, large removals of chimeric reads are a result of failure to remove ambiguous nucleotide primer sequences prior to dada2 pipeline processing. In addition, there is a higher risk for chimeras if reads lack necessary overlap for merging.
 
-## Concerning Issues with Installation  
-
-The phyloseq link stated above can also be used to troubleshoot its installation. Issues with installing packages may be attributed to the version of R Studio you are working with. Ensure installation of packages compatible with your system's version of R Studio. You may need to install newer versions of some packages for compatibility purposes. 
+## Concerning SILVA
 
 Ensure the most recent version of SILVA is used to assign taxonomy. Be sure it is accessible on your system using the path you input in the assignTaxonomy() function. 
 
+## Concerning Issues with Installation  
+
+The phyloseq link stated above (i.e., https://www.bioconductor.org/packages/release/bioc/html/phyloseq.html) can also be used to troubleshoot its installation. Issues with installing packages may be attributed to the version of R Studio you are working with. Ensure installation of packages compatible with your system's version of R Studio. You may need to install newer versions of some packages for compatibility purposes. 
+
 ## Concerning Script Compatibility 
 
-Portions of this script will need to be edited such that they can be used by your system. For instance, you must manually denote where your working directory is, rather than using the filler name displayed in this file. In addition, since this script was adapted for a Mac, it may need to be altered such that it is compatible with your system. You may use the link below for troubleshooting purposes. 
+Portions of this script will need to be edited such that they can be used by your system. For instance, you must manually denote where your working directory is, rather than using the filler name from this file. In addition, since this script was adapted for a Mac, it may need to be altered such that it is compatible with your system. The link below can be used for troubleshooting purposes. 
 
 https://benjjneb.github.io/dada2/dada-installation.html
 
