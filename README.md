@@ -428,7 +428,7 @@ Next we will use plot_bar() to plot our "glommed" g_phylum graph. This graph wil
 plot_bar(g_phylum, fill="Phylum")
 ```
 
-Now that we've "glommed" together our taxa by Phylum, we can make a relative abundance graph from our absolute abundance data. We can do this by tallying up the ASVs within each taxa in one sample, and dividing by its total number of ASVs. Then we can use psmelt() to remove phyloseq's formatting and make the data easier to plot.
+Now that we've "glommed" together our taxa by Phylum, we can make a relative abundance graph from our absolute abundance data. We can do this by tallying up the ASVs within each taxa in one sample, and dividing by its total number of ASVs. Then we can use psmelt() to remove phyloseq's formatting, making the data easier to plot.
 
 ```{r}
 ps_phylum_relabun <- transform_sample_counts(g_phylum, function(ASV) ASV/sum(ASV))
