@@ -484,6 +484,10 @@ Recall that when truncating reads you must leave at least a 50 base pair overlap
 
 If you want to speed up downstream computation, consider tightening maxEE. If too few reads are passing the filter, consider relaxing maxEE, perhaps especially on the reverse reads (i.e., maxEE=c(2,5)), and reducing the truncLen to remove low quality tails. Remember though, when choosing truncLen for paired-end reads you must maintain overlap after truncation in order to merge them later.
 
+### Step Three: 
+
+If your the error rates of your data are poor, your data may not be useable. This pipeline cannot help correct the error rates of your samples. 
+
 ### Step Four: Merge Paired-End Reads
 
 Sequences that are much longer or shorter than expected may be the result of non-specific priming. You can remove non-target-length sequences from your sequence table (i.e., seqtab2 <- seqtab[,nchar(colnames(seqtab)) %in% 250:256]). This is analogous to “cutting a band” in-silico to get amplicons of the targeted length.  
