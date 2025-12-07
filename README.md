@@ -1,4 +1,4 @@
-# 16S-Amplicon-Variant-Sequence-Processing-Pipeline
+# 16S-Amplicon-Sequence-Variant-Processing-Pipeline
 The following is a README file detailing the use of an 16S amplicon sequence variant (ASV) processing pipeline. The dada2 portion of this script allows for processing of amplicon sequencing data to identify and quantify ASVs. The latter portion of this script uses phyloseq to visualize the relative abundance of our processed amplicon sequencing data.
 
 # Installation Instructions 
