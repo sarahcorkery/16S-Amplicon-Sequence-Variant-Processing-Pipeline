@@ -29,6 +29,8 @@ Using the link below, we will download the most recent version of SILVA, version
 
 https://zenodo.org/records/14169026
 
+Note its location on your computer as it will be necessary later in the pipeline. 
+
 ## phyloseq
 
 Phyloseq and a set of other packages are required for this processing pipeline. These will allow us to produce high-quality graphs from our processed amplicon sequencing data. 
@@ -73,7 +75,7 @@ This step should be completed prior to 16S ASV processing. Please consider the f
 
 ### Sequencing Depth: 
 
-How many sequencing runs (or depth) do you require per sample? The standard number of sequencing runs per sample is 10,000 or 1x depth, and tends to be sufficient (Lundin et al. 2012). Should you desire high sequencing diversity, you will likely require more runs. Check relevant literature to determine what a good depth for your work may be. This pipeline will use data sequenced at a 1x sequencing depth. 
+How many sequencing runs (or what depth) do you require per sample? The standard number of sequencing runs per sample is 10,000 or 1x depth, which tends to be sufficient (Lundin et al. 2012). You will likely need more runs if you desire high sequencing diversity. Examine relevant literature to determine what a good depth for your work may be. 
 
 ### Primer Bias: 
 
@@ -85,7 +87,7 @@ We will be creating paired-end reads, which are forward and reverse reads joined
 
 ## Step Two: Initial Preparation
 
-First, you must saving your raw sequencing files to where you intend to set your working directory. Once they have been moved to your desired location, unzip your fastq.gz files. Ensure they have the extension .fastq, not .fastq.gz before moving forward. 
+First, you must save your raw sequencing files to where you intend to set your working directory. Once they have been moved to your desired location, unzip your fastq.gz files. Ensure they have the extension .fastq, not .fastq.gz before continuing. 
 
 Next, we will set our working directory. Be sure to do so where your sequence files are located!
 
