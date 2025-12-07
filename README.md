@@ -475,7 +475,7 @@ The phyloseq link stated above can also be used to troubleshoot its installation
 
 Ensure the most recent version of SILVA is used to assign taxonomy. Be sure it is accessible on your system using the path you input in the assignTaxonomy() function. 
 
-Portions of this script will need to be edited, such that they can be used by your system. For instance, you must manually denote where your working directory is, rather than using the sample one displayed in this code. In addition, since this script was adapted for a Mac, it may need to  be altered such that it is compatible with your system. You may use the link below for troubleshooting purposes. 
+Portions of this script will need to be edited such that they can be used by your system. For instance, you must manually denote where your working directory is, rather than using the filler name displayed in this file. In addition, since this script was adapted for a Mac, it may need to be altered such that it is compatible with your system. You may use the link below for troubleshooting purposes. 
 
 https://benjjneb.github.io/dada2/dada-installation.html
 
