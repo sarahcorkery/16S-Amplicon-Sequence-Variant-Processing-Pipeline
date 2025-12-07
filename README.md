@@ -464,9 +464,9 @@ p_abun_stacked
 
 ## Other Graphing Options 
 
-The 16S Amplicon Sequence Variant Processing Pipeline features code to produce relative abundance graphs using ggplot2. This code will be included below. More detailed instructions can be found in the attached script. 
+The 16S Amplicon Sequence Variant Processing Pipeline features code to produce other types of relative abundance graphs using ggplot2, which will be included below. More detailed instructions can be found in the attached script. 
 
-To produce a geom_point graph, where the size of points reflect taxonomic relative abundance, the following script can be employed. 
+To produce a geom_point graph, where the size of points reflects taxonomic relative abundance, the following script can be employed. 
 
 ```{r}
 taxa_abundance_table_order$Abundance[taxa_abundance_table_order$Abundance == 0] <- NA
